@@ -1,6 +1,8 @@
 package com.etx.mbox;
 import org.apache.james.mime4j.mboxiterator.CharBufferWrapper;
 import org.apache.james.mime4j.mboxiterator.MboxIterator;
+
+import javax.mail.Header;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayInputStream;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.util.Enumeration;
 import java.util.Properties;
 
 public class Main {
@@ -35,9 +38,22 @@ public class Main {
                     InputStream is = new ByteArrayInputStream(message.toString().getBytes());
                     MimeMessage msg = new MimeMessage(s, is);
 
-                    // Print Just Sent Date and Message-ID
+                    // Print Some Details
                     System.out.println(counter + " - " + msg.getSentDate().toString() + " - " + msg.getMessageID() + " - " + msg.getSubject());
 
+                    // Print Some Details
+                    //msg.getAllHeaderLines();
+                    for (Enumeration<javax.mail.Header> e = msg.getAllHeaders(); e.hasMoreElements();) {
+                        Header h = e.nextElement();
+
+
+                        if (h.getName().equals("From") == true) {
+                            System.out.println(h.getName() + " - " + h.getValue());
+                        }
+
+                    }
+
+                    System.out.println();
 
                 } catch (Exception e) {
                     e.printStackTrace();
