@@ -6,16 +6,13 @@ import org.apache.james.mime4j.mboxiterator.MboxIterator;
 import javax.mail.Header;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Properties;
 
 public class Main {
@@ -24,13 +21,17 @@ public class Main {
 	// write your code here
 
         CharsetEncoder ENCODER = Charset.forName("ISO-8859-1").newEncoder();
-        final File mboxFile = new File("C:\\Users\\jjaros01\\Downloads\\201210.mbox");
+        final File mboxFile = new File(args[0]);
         int counter = 0;
 
-            for (CharBufferWrapper message : MboxIterator.fromFile(mboxFile).charset(ENCODER.charset()).build()) {
+        try {
+
+          //  String regex = "From: (([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+            String regex = "From \\d{10}";
+
+            for (CharBufferWrapper message : MboxIterator.fromFile(mboxFile).fromLine(regex).charset(ENCODER.charset()).build()) {
 
 
-                try {
 
                     counter++;
 
@@ -42,7 +43,8 @@ public class Main {
                     MimeMessage msg = new MimeMessage(s, is);
 
                     // Print Some Details
-                    System.out.println(counter + " - " + msg.getSentDate().toString() + " - " + msg.getFrom()[0] + " - " + msg.getMessageID());
+                    System.out.println(counter + " - " + " - " + msg.getFrom()[0] + " - " + msg.getMessageID() );
+                   // System.out.println( );
 
                     // Print Some Details
 
@@ -51,36 +53,30 @@ public class Main {
                     for (Enumeration<javax.mail.Header> e = msg.getAllHeaders(); e.hasMoreElements();) {
                         Header h = e.nextElement();
 
-                        if (h.getName().equals("From") == true) {
+                        if (h.getName().equals("From")) {
                             System.out.println(h.getName() + ": " + h.getValue());
 
                         }
 
-                        if (h.getName().equals("Date") == true) {
+                        if (h.getName().equals("Date")) {
                             System.out.println(h.getName() + ": " + h.getValue());
                         }
 
-                        if (h.getName().equals("Subject") == true) {
+                        if (h.getName().equals("Subject")) {
                             System.out.println(h.getName() + ": " + h.getValue());
                         }
-
 
 
                     }
 
-                    ObjectMapper mapper= new ObjectMapper();
-                    String carAsString = mapper.writeValueAsString(msg);
+                System.out.println("----------");
 
-
-                    System.out.println(carAsString);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
             }
 
 
-
+            } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
